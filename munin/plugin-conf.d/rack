@@ -1,0 +1,4 @@
+[rack*]
+user www-data
+env.url   http://127.0.0.1:%d/rack_status
+env.ports 3000
