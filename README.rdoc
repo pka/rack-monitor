@@ -27,7 +27,7 @@ Add this to your `config/environments/production.rb`:
  config.gem "rack-monitor", :lib => "rack/monitor"
 
  require 'rack/monitor' #Rails bug?
- config.middleware.use Rack::Monitor
+ config.middleware.use ::Rack::Monitor
 
 You should now see `Rack::Monitor` listed in the middleware pipeline:
 
@@ -38,7 +38,7 @@ You should now see `Rack::Monitor` listed in the middleware pipeline:
 Copy plugin files from http://github.com/pka/rack-monitor/tree/master/munin/ to /etc/munin/plugins/
 
 Setup a configuration in /etc/munin/plugin-conf.d/ like
-http://github.com/pka/rack-monitor/tree/master/muninplugin-conf.d/rack
+http://github.com/pka/rack-monitor/tree/master/munin/plugin-conf.d/rack
 
  /etc/init.d/munin-node restart
 
