@@ -33,6 +33,8 @@ You should now see `Rack::Monitor` listed in the middleware pipeline:
 
  RAILS_ENV=production rake middleware
 
+Rack::Rails doesn't work properly when started with mongrel_rails. Use thin instead.
+
 ==Monitoring with Munin
 
 Copy plugin files from http://github.com/pka/rack-monitor/tree/master/munin/ to /etc/munin/plugins/
