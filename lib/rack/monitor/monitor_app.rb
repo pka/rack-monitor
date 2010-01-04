@@ -21,9 +21,9 @@ class MonitorApp
       [200, {'Content-Type' => 'text/plain'}, [monitor_output]]
     else
       @sensors.each { |sensor| sensor.before(env) }
-      status, headers, response = @app.call(env)
-      @sensors.each { |sensor| sensor.after(env) }
-      [status, headers, response]
+      status, headers, body = @app.call(env)
+      @sensors.each { |sensor| sensor.after(env, status, headers, body) }
+      [status, headers, body]
     end
   end
 

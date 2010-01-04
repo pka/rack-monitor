@@ -8,7 +8,7 @@ class Sensor
   end
   
   #Called after request
-  def after(env)
+  def after(env, status, headers, body)
   end
   
   #Called before delivering measurements

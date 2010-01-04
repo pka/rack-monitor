@@ -61,7 +61,7 @@ if ( defined $ARGV[0] and $ARGV[0] eq "config" )
     }
     print "graph_category Http\n";
     foreach my $port (@PORTS) {
-        print "requests$port.label port $port\n";
+        print "requests$port.label Port $port\n";
         print "requests$port.type DERIVE\n";
         print "requests$port.max 1000000\n";
         print "requests$port.min 0\n";
