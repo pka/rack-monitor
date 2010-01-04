@@ -5,12 +5,12 @@ monitoring tools like Munin.
 
 ==Installation
 
- $ sudo gem install rack-monitor
+ sudo gem install rack-monitor
 
 ==Basic Usage
 
 Rack::Monitor is implemented as a piece of Rack middleware and can be used with
-any Rack-based application. If your application includes a rackup (`.ru`) file
+any Rack-based application. If your application includes a rackup (<tt>.ru</tt>) file
 or uses Rack::Builder to construct the application pipeline, simply require
 and use as follows:
 
@@ -22,18 +22,18 @@ and use as follows:
 
 ==Using with Rails
 
-Add this to your `config/environments/production.rb`:
+Add this to your <tt>config/environments/production.rb</tt>:
 
  config.gem "rack-monitor", :lib => "rack/monitor"
 
  require 'rack/monitor' #Rails bug?
  config.middleware.use ::Rack::Monitor
 
-You should now see `Rack::Monitor` listed in the middleware pipeline:
+You should now see <tt>Rack::Monitor</tt> listed in the middleware pipeline:
 
  RAILS_ENV=production rake middleware
 
-Rack::Rails doesn't work properly when started with mongrel_rails. Use thin instead.
+Rack::Monitor doesn't work properly when started with mongrel_rails. Use thin instead.
 
 ==Monitoring with Munin
 
