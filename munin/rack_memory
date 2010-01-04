@@ -1,0 +1,97 @@
+#!/usr/bin/perl
+#
+# Plugin to monitor memory usage of a rack server process.
+#
+# This configuration section shows the defaults of the plugin:
+#
+#   [rack_*]
+#      env.url   http://127.0.0.1:%d/status
+#      env.ports 80
+#
+# Parameters supported:
+#
+#   config   (required)
+#
+# Magic markers - optional - used by installation scripts and munin-config:
+#
+#%# family=manual
+
+my $ret = undef;
+
+if (! eval "require LWP::UserAgent;")
+{
+    $ret = "LWP::UserAgent not found";
+}
+
+my $URL = exists $ENV{'url'} ? $ENV{'url'} : "http://127.0.0.1:%d/rack_status";
+my @PORTS = exists $ENV{'ports'} ? split(' ', $ENV{'ports'}) : (80);
+
+if ( defined $ARGV[0] and $ARGV[0] eq "autoconf" )
+{
+    if ($ret)
+    {
+        print "no ($ret)\n";
+        exit 1;
+    }
+
+    my $ua = LWP::UserAgent->new(timeout => 30);
+
+    my @badports;
+    foreach my $port (@PORTS) {
+        my $url = sprintf $URL, $port;
+        my $response = $ua->request(HTTP::Request->new('GET',$url));
+        push @badports, $port unless $response->is_success and $response->content =~ /^\[Version:rack_info\]/m;
+    }
+    if (@badports) {
+        print "no (no rack server status on ports @badports)\n";
+        exit 1;
+    } else {
+        print "yes\n";
+        exit 0;
+    }
+}
+
+my %mems;
+
+if ( defined $ARGV[0] and $ARGV[0] eq "config" )
+{
+    #&fetch_meminfo;
+
+    print "graph_title Rack memory usage\n";
+    print "graph_args --base 1024 -l 0 --vertical-label Bytes\n";  #--upper-limit ", $mems{'MemTotal'}, "\n";
+    if (scalar(@PORTS) > 1) {
+        print "graph_total total\n";
+    }
+    print "graph_category Http\n";
+    foreach my $port (@PORTS) {
+        print "memory$port.label port $port\n";
+        print "memory$port.draw AREA\n";
+        print "memory$port.info Memory used by rack process.\n";
+    }
+    exit 0;
+}
+
+my $ua = LWP::UserAgent->new(timeout => 30);
+
+foreach my $port (@PORTS) {
+    my $url = sprintf $URL, $port;
+    my $response = $ua->request(HTTP::Request->new('GET',$url));
+    if ($response->content =~ /^\[Memory:used\].*:\s+(.+)$/im) {
+        print "memory$port.value $1\n";
+    } else {
+        print "memory$port.value U\n";
+    }
+}
+
+sub fetch_meminfo
+{
+	open (IN, "/proc/meminfo") || die "Could not open /proc/meminfo for reading: $!";
+	while (<IN>)
+	{
+		if (/^(\w+):\s*(\d+)\s+kb/i)
+		{
+			$mems{"$1"} = $2 * 1024;
+		}
+	}
+	close (IN);
+}
