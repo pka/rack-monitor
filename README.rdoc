@@ -19,7 +19,7 @@ and use as follows:
 
  if ENV['RACK_ENV'] == 'production'
    use Rack::Access, '/rack_status' => [ '127.0.0.1' ]
-   use Rack::Monitor
+   use Rack::Monitor, :url => '/rack_status', :watch => ['/', '/ping']
  end
 
  run app
@@ -31,7 +31,7 @@ Add this to your <tt>config/environments/production.rb</tt>:
  config.gem "rack-monitor", :lib => "rack/monitor"
 
  require 'rack/monitor' #Rails bug?
- config.middleware.use ::Rack::Monitor
+ config.middleware.use ::Rack::Monitor, :url => '/rack_status', :watch => ['/', '/ping']
 
 You should now see <tt>Rack::Monitor</tt> listed in the middleware pipeline:
 
