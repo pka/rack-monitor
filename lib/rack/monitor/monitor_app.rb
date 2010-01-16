@@ -11,7 +11,10 @@ module Rack::Monitor
 class MonitorApp
   def initialize(app, options={})
     @app = app
-    @options = {:url=>'/rack_status'}.merge(options)
+    @options = {
+      :url => '/rack_status',
+      :ignore_addr => ['127.0.0.1']
+    }.merge(options)
     sensor_class_names = Rack::Monitor.constants.reject { |s| %q(Sensor MonitorApp).include?(s) }
     @sensors = sensor_class_names.collect { |s| Rack::Monitor.const_get(s).new }
     @watches = {}
@@ -26,17 +29,21 @@ class MonitorApp
     if env["PATH_INFO"] == @options[:url]
       [200, {'Content-Type' => 'text/plain'}, [monitor_output]]
     else
-      @sensors.each { |sensor| sensor.before(env) }
-      if @watches.has_key?(env["PATH_INFO"])
-        @watches[env["PATH_INFO"]].each { |sensor| sensor.before(env) }
+      unless @options[:ignore_addr].include?(env['REMOTE_ADDR'])
+        @sensors.each { |sensor| sensor.before(env) }
+        if @watches.has_key?(env["PATH_INFO"])
+          @watches[env["PATH_INFO"]].each { |sensor| sensor.before(env) }
+        end
       end
 
       status, headers, body = @app.call(env)
 
-      if @watches.has_key?(env["PATH_INFO"])
-        @watches[env["PATH_INFO"]].each { |sensor| sensor.after(env, status, headers, body) }
+      unless @options[:ignore_addr].include?(env['REMOTE_ADDR'])
+        if @watches.has_key?(env["PATH_INFO"])
+          @watches[env["PATH_INFO"]].each { |sensor| sensor.after(env, status, headers, body) }
+        end
+        @sensors.each { |sensor| sensor.after(env, status, headers, body) }
       end
-      @sensors.each { |sensor| sensor.after(env, status, headers, body) }
       [status, headers, body]
     end
   end

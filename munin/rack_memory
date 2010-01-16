@@ -65,7 +65,6 @@ if ( defined $ARGV[0] and $ARGV[0] eq "config" )
     print "graph_category Http\n";
     foreach my $port (@PORTS) {
         print "memory$port.label Port $port\n";
-        print "memory$port.draw AREA\n";
         print "memory$port.info Memory used by rack process.\n";
     }
     exit 0;
