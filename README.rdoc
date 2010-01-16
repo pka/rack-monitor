@@ -5,7 +5,7 @@ monitoring tools like Munin.
 
 ==Installation
 
- sudo gem install rack-monitor
+ sudo gem install rack-monitor rack-contrib
 
 ==Basic Usage
 
@@ -14,9 +14,13 @@ any Rack-based application. If your application includes a rackup (<tt>.ru</tt>)
 or uses Rack::Builder to construct the application pipeline, simply require
 and use as follows:
 
+ require 'rack/contrib'
  require 'rack/monitor'
 
- use Rack::Monitor if ENV['RACK_ENV'] == 'production'
+ if ENV['RACK_ENV'] == 'production'
+   use Rack::Access, '/rack_status' => [ '127.0.0.1' ]
+   use Rack::Monitor
+ end
 
  run app
 
