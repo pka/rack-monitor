@@ -10,7 +10,7 @@ begin
     gem.email = "pka@sourcepole.com"
     gem.homepage = "http://github.com/pka/rack-monitor"
     gem.authors = ["Pirmin Kalberer"]
-    gem.files = FileList['lib/**/*.rb'].to_a
+    gem.files = FileList['lib/**/*.rb', 'munin/**/*'].to_a
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 rescue LoadError

@@ -5,7 +5,7 @@
 # This configuration section shows the defaults of the plugin:
 #
 #   [rack_*]
-#      env.url   http://127.0.0.1:%d/status
+#      env.url   http://127.0.0.1:%d/rack_status
 #      env.ports 80
 #
 # Parameters supported:
@@ -56,15 +56,21 @@ if ( defined $ARGV[0] and $ARGV[0] eq "autoconf" )
 
 if ( defined $ARGV[0] and $ARGV[0] eq "config" )
 {
-    print "graph_title Response codes (in percent)\n";
-    print "graph_args --upper-limit 100 -l 0\n";
-    print "graph_vlabel %\n";
-    print "graph_scale no\n";
+    print "graph_title Response codes\n";
+    print "graph_args --base 1000\n";
     print "graph_category Http\n";
-    foreach my $port (@PORTS) {
-        foreach my $code (sort(keys(%CODES))) {
-            print "status${code}.label Status $CODES{$code}\n";
+    my $level = 0;
+    foreach my $code (sort(keys(%CODES))) {
+        print "status${code}.label Status $CODES{$code}\n";
+        print "status${code}.type DERIVE\n";
+        if ($level == 0) {
+          print "status${code}.draw AREA\n";
+        } else {
+          print "status${code}.draw STACK\n";
         }
+        print "status${code}.max 1000000\n";
+        print "status${code}.min 0\n";
+        $level++;
     }
     exit 0;
 }
@@ -88,10 +94,5 @@ foreach my $port (@PORTS) {
     }
 }
 foreach my $code (sort(keys(%CODES))) {
-    if ($request_total> 0) {
-        my $percentage = $status_total{$code}/$request_total*100;
-        print "status${code}.value $percentage\n";
-    } else {
-        print "status${code}.value U\n";
-    }
+    print "status${code}.value $status_total{$code}\n";
 }

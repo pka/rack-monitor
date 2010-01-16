@@ -5,7 +5,7 @@
 # This configuration section shows the defaults of the plugin:
 #
 #   [rack_*]
-#      env.url   http://127.0.0.1:%d/status
+#      env.url   http://127.0.0.1:%d/rack_status
 #      env.ports 80
 #
 # Parameters supported:
